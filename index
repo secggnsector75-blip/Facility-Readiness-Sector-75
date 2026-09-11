@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pre-Monsoon Readiness — Sector 75</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+  :root{
+    --storm-900:#12202b;
+    --storm-700:#1f3a4f;
+    --storm-500:#3a5c72;
+    --mist-100:#eef3f2;
+    --mist-050:#f7faf9;
+    --teal-600:#0f6e6a;
+    --teal-700:#0b5551;
+    --amber-500:#e2a73e;
+    --amber-700:#a9781f;
+    --green-600:#3f7d58;
+    --red-600:#b8503e;
+    --line:#dbe4e2;
+    --card:#ffffff;
+    --shadow: 0 1px 2px rgba(18,32,43,0.06), 0 4px 14px rgba(18,32,43,0.06);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background: var(--mist-100);
+    background-image:
+      radial-gradient(ellipse at top left, rgba(15,110,106,0.06), transparent 55%),
+      radial-gradient(ellipse at bottom right, rgba(31,58,79,0.05), transparent 50%);
+    font-family:'Inter', -apple-system, sans-serif;
+    color: var(--storm-900);
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  .serif{ font-family:'Fraunces', serif; }
+
+  /* ---- top bar ---- */
+  .topbar{
+    position:sticky; top:0; z-index:40;
+    background: linear-gradient(180deg, var(--storm-900) 0%, var(--storm-700) 100%);
+    color:#eef3f2;
+    padding: 18px 20px 16px;
+    box-shadow: 0 4px 20px rgba(18,32,43,0.25);
+  }
+  .topbar-inner{ max-width: 980px; margin:0 auto; }
+  .eyebrow-row{ display:flex; align-items:center; gap:10px; margin-bottom:4px;}
+  .rain-mark{ width:20px; height:20px; flex-shrink:0; opacity:0.9; }
+  .eyebrow{ font-size:12.5px; letter-spacing:0.02em; color:#9fc3bd; font-weight:500; }
+  h1.title{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size: 26px;
+    line-height:1.15;
+    margin: 2px 0 14px;
+    color:#fbfdfc;
+  }
+  .progress-strip{
+    display:flex; align-items:center; gap:14px;
+  }
+  .ring-wrap{ position:relative; width:52px; height:52px; flex-shrink:0;}
+  .ring-wrap svg{ transform:rotate(-90deg); }
+  .ring-track{ fill:none; stroke:rgba(255,255,255,0.14); stroke-width:5; }
+  .ring-val{ fill:none; stroke:#7fd9c4; stroke-width:5; stroke-linecap:round; transition: stroke-dashoffset 0.5s ease; }
+  .ring-pct{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:12.5px; font-weight:700; color:#fff; }
+  .progress-text{ font-size: 13.5px; color:#cfe0dc; line-height:1.4; }
+  .progress-text strong{ color:#fff; font-weight:600; }
+
+  .actions-row{ display:flex; gap:8px; margin-left:auto; }
+  .btn{
+    appearance:none; border:none; cursor:pointer;
+    font-family:inherit; font-size:13.5px; font-weight:600;
+    padding:9px 14px; border-radius:8px;
+    display:inline-flex; align-items:center; gap:6px;
+    transition: transform 0.12s ease, background 0.15s ease, box-shadow .15s ease;
+  }
+  .btn:active{ transform: scale(0.97); }
+  .btn-primary{ background:#7fd9c4; color:#0c2b26; }
+  .btn-primary:hover{ background:#93e2cf; }
+  .btn-ghost{ background: rgba(255,255,255,0.1); color:#eef3f2; }
+  .btn-ghost:hover{ background: rgba(255,255,255,0.16); }
+  .btn:disabled{ opacity:0.5; cursor:not-allowed; }
+  .btn svg{ width:15px; height:15px; }
+
+  /* ---- tabs ---- */
+  .tabs-wrap{
+    max-width:980px; margin: 0 auto; padding: 0 20px;
+    position: sticky; top: 0px; z-index: 39;
+  }
+  .tabs{
+    display:flex; gap:6px; overflow-x:auto; padding: 14px 0 0;
+    scrollbar-width:none;
+  }
+  .tabs::-webkit-scrollbar{ display:none; }
+  .tab{
+    flex-shrink:0; cursor:pointer; user-select:none;
+    padding: 9px 15px 10px;
+    border-radius: 9px 9px 0 0;
+    font-size:14px; font-weight:600; color: var(--storm-500);
+    background: rgba(255,255,255,0.55);
+    border: 1px solid var(--line); border-bottom:none;
+    position:relative; top:1px;
+    display:flex; align-items:center; gap:8px;
+    transition: background .15s ease, color .15s ease;
+  }
+  .tab:hover{ background: rgba(255,255,255,0.85); }
+  .tab.active{ background: var(--card); color: var(--storm-900); border-color: var(--line); }
+  .tab .tab-badge{
+    font-size:10.5px; font-weight:700; padding:1.5px 6px; border-radius:20px;
+    background: var(--mist-100); color: var(--storm-500);
+  }
+  .tab.active .tab-badge.complete{ background: rgba(63,125,88,0.14); color: var(--green-600); }
+
+  /* ---- main content ---- */
+  .content{
+    max-width:980px; margin:0 auto; padding: 0 20px 90px;
+  }
+  .block-card{
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 0 10px 10px 10px;
+    padding: 4px 0 10px;
+    box-shadow: var(--shadow);
+  }
+  .section-group{ border-bottom:1px solid var(--line); }
+  .section-group:last-child{ border-bottom:none; }
+  .section-head{
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 16px 20px 8px;
+    cursor:pointer;
+  }
+  .section-title{
+    font-family:'Fraunces', serif; font-weight:600; font-size:16.5px; color: var(--storm-700);
+  }
+  .section-meta{ font-size:12px; color:var(--storm-500); font-weight:500; display:flex; align-items:center; gap:8px;}
+  .chev{ width:16px; height:16px; color:var(--storm-500); transition: transform .18s ease; }
+  .section-group.collapsed .chev{ transform: rotate(-90deg); }
+  .section-group.collapsed .items{ display:none; }
+
+  .items{ padding: 2px 10px 12px; }
+  .item-row{
+    display:flex; align-items:flex-start; gap:10px;
+    padding: 11px 10px;
+    border-radius: 9px;
+    transition: background .15s ease;
+  }
+  .item-row:hover{ background: var(--mist-050); }
+  .item-row.done{ background: rgba(63,125,88,0.045); }
+
+  .pin-btn{
+    flex-shrink:0; width:30px; height:30px; border-radius:50%;
+    border: 1.5px dashed var(--line);
+    background: var(--mist-050);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; position:relative;
+    color: var(--storm-500);
+    transition: border-color .15s ease, background .15s ease, color .15s ease;
+  }
+  .pin-btn:hover{ border-color: var(--teal-600); color: var(--teal-600); background: rgba(15,110,106,0.06); }
+  .pin-btn svg{ width:14px; height:14px; }
+  .pin-btn.filled{
+    border-style: solid; border-color: var(--teal-600);
+    padding:0; overflow:hidden;
+  }
+  .pin-btn.filled img{ width:100%; height:100%; object-fit:cover; }
+  .pin-label{
+    position:absolute; bottom:-15px; left:50%; transform:translateX(-50%);
+    font-size:8.5px; letter-spacing:0.03em; color: var(--storm-500); font-weight:700;
+    white-space:nowrap;
+  }
+  .pin-dot{
+    position:absolute; top:-2px; right:-2px; width:9px; height:9px; border-radius:50%;
+    background: var(--teal-600); border:1.5px solid #fff;
+  }
+
+  .item-main{ flex:1; min-width:0; padding-top:1px; }
+  .item-toprow{ display:flex; align-items:flex-start; gap:9px; }
+  .checkbox{
+    flex-shrink:0; width:20px; height:20px; border-radius:5px;
+    border: 1.8px solid #b9c8c6; background:#fff;
+    cursor:pointer; margin-top:1px;
+    display:flex; align-items:center; justify-content:center;
+    transition: all .15s ease;
+  }
+  .checkbox svg{ width:13px; height:13px; opacity:0; transition:opacity .1s ease; stroke:white; }
+  .checkbox.checked{ background: var(--green-600); border-color: var(--green-600); }
+  .checkbox.checked svg{ opacity:1; }
+  .item-text{
+    font-size:14.5px; line-height:1.45; color: var(--storm-900);
+  }
+  .item-row.done .item-text{ color: var(--storm-500); text-decoration: line-through; text-decoration-color: rgba(63,125,88,0.4); text-decoration-thickness:1.5px; }
+  .item-sno{ font-variant-numeric: tabular-nums; color:var(--storm-500); font-weight:600; font-size:12.5px; margin-right:6px;}
+
+  .remarks-toggle{
+    font-size:11.5px; color: var(--teal-600); font-weight:600; cursor:pointer;
+    margin-top:5px; display:flex; align-items:center; gap:3px;
+  }
+  .remarks-box{
+    margin-top:7px; width:100%; max-width:520px;
+    font-family:inherit; font-size:13px; color:var(--storm-900);
+    border:1px solid var(--line); border-radius:7px; padding:7px 9px;
+    resize:vertical; min-height:34px; background:var(--mist-050);
+  }
+  .remarks-box:focus{ outline:none; border-color: var(--teal-600); background:#fff; }
+  .remarks-preview{
+    margin-top:5px; font-size:12.5px; color: var(--storm-500); font-style: italic;
+    cursor:text; display:block;
+  }
+
+  .subheader-tag{
+    display:inline-block; font-size:10.5px; font-weight:700; letter-spacing:0.01em;
+    color: var(--amber-700); background: rgba(226,167,62,0.15);
+    padding: 1.5px 7px; border-radius:5px; margin-bottom:4px;
+  }
+
+  /* empty / loading */
+  .loading-wrap{ display:flex; flex-direction:column; align-items:center; justify-content:center; padding: 90px 20px; color: var(--storm-500); gap:14px; }
+  .spinner{ width:26px; height:26px; border:3px solid var(--line); border-top-color: var(--teal-600); border-radius:50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin{ to{ transform: rotate(360deg); } }
+
+  /* photo lightbox */
+  .lightbox{
+    position:fixed; inset:0; background: rgba(18,32,43,0.85); z-index:100;
+    display:flex; align-items:center; justify-content:center; padding: 30px;
+    backdrop-filter: blur(2px);
+  }
+  .lightbox-inner{ max-width: 90vw; max-height:80vh; text-align:center; }
+  .lightbox img{ max-width:90vw; max-height:70vh; border-radius:10px; box-shadow:0 10px 40px rgba(0,0,0,0.4); }
+  .lightbox-caption{ color:#eef3f2; font-size:13.5px; margin-top:14px; font-weight:600; }
+  .lightbox-actions{ margin-top:14px; display:flex; gap:10px; justify-content:center; }
+  .lightbox-btn{
+    background: rgba(255,255,255,0.12); color:#fff; border:none; padding:8px 16px;
+    border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit;
+  }
+  .lightbox-btn.danger{ background: rgba(184,80,62,0.85); }
+  .lightbox-close{ position:absolute; top:18px; right:22px; background:none; border:none; color:#fff; font-size:26px; cursor:pointer; line-height:1;}
+
+  /* toast */
+  .toast{
+    position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
+    background: var(--storm-900); color:#eef3f2; padding:11px 20px; border-radius:9px;
+    font-size:13.5px; font-weight:500; box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    z-index:200; display:flex; align-items:center; gap:8px;
+    opacity:0; pointer-events:none; transition: opacity .25s ease, transform .25s ease;
+  }
+  .toast.show{ opacity:1; transform:translateX(-50%) translateY(-4px); }
+  .toast svg{ width:15px; height:15px; color:#7fd9c4; flex-shrink:0; }
+
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(18,32,43,0.6); z-index:150;
+    display:flex; align-items:center; justify-content:center; padding:20px;
+    backdrop-filter: blur(2px);
+  }
+  .modal-box{
+    background:#fff; border-radius:14px; max-width:480px; width:100%;
+    padding:24px; box-shadow:0 20px 60px rgba(0,0,0,0.3);
+    max-height:85vh; overflow-y:auto;
+  }
+  .modal-title{ font-family:'Fraunces', serif; font-weight:600; font-size:19px; color:var(--storm-900); margin-bottom:8px;}
+  .modal-desc{ font-size:13px; color:var(--storm-500); line-height:1.55; margin:0 0 14px; }
+  .modal-input{
+    width:100%; font-family:inherit; font-size:13.5px; padding:10px 12px;
+    border:1.5px solid var(--line); border-radius:8px; color:var(--storm-900);
+    background:var(--mist-050);
+  }
+  .modal-input:focus{ outline:none; border-color:var(--teal-600); background:#fff; }
+  .modal-actions{ display:flex; gap:8px; margin-top:16px; align-items:center; }
+  .howto-box{
+    margin-top:16px; padding:14px 16px; background:var(--mist-050); border-radius:9px;
+    font-size:12.5px; line-height:1.7; color:var(--storm-700);
+  }
+  .howto-box ol{ margin:6px 0 0; padding-left:18px; }
+  .howto-box code{
+    background:#fff; border:1px solid var(--line); padding:1px 5px; border-radius:4px; font-size:11.5px;
+  }
+  .inspector-row{
+    display:flex; align-items:center; gap:10px; padding:16px 20px;
+    background: var(--mist-050); border-top:1px solid var(--line);
+    border-radius:0 0 10px 10px;
+  }
+  .inspector-row label{ font-size:12.5px; font-weight:600; color:var(--storm-700); flex-shrink:0; }
+  .inspector-row input{
+    flex:1; max-width:260px; font-family:inherit; font-size:13.5px;
+    padding:8px 11px; border:1.5px solid var(--line); border-radius:7px; background:#fff;
+  }
+  .inspector-row input:focus{ outline:none; border-color:var(--teal-600); }
+  .drive-status{ font-size:11.5px; color:var(--storm-500); display:flex; align-items:center; gap:5px; margin-left:auto; }
+  .drive-status svg{ width:12px; height:12px; }
+
+  .footer-note{
+    max-width:980px; margin: 22px auto 0; padding:0 20px;
+    font-size:12px; color: var(--storm-500); text-align:center;
+  }
+
+  @media (max-width: 600px){
+    h1.title{ font-size:21px; }
+    .actions-row{ width:100%; margin-top:12px; }
+    .progress-strip{ flex-wrap:wrap; }
+    .btn{ flex:1; justify-content:center; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="eyebrow-row">
+      <svg class="rain-mark" viewBox="0 0 24 24" fill="none">
+        <path d="M6 16.5a4.5 4.5 0 0 1 1-8.9A6 6 0 0 1 18.5 9 4 4 0 0 1 18 17H7" stroke="#7fd9c4" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M8 20l-1 2M12 20l-1 2M16 20l-1 2" stroke="#7fd9c4" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+      <span class="eyebrow">Facility Readiness · Sector 75</span>
+    </div>
+    <h1 class="title">Pre-Monsoon Checklist</h1>
+    <div class="progress-strip">
+      <div class="ring-wrap">
+        <svg width="52" height="52" viewBox="0 0 52 52">
+          <circle class="ring-track" cx="26" cy="26" r="22"/>
+          <circle id="ringVal" class="ring-val" cx="26" cy="26" r="22" stroke-dasharray="138.2" stroke-dashoffset="138.2"/>
+        </svg>
+        <div class="ring-pct" id="ringPct">0%</div>
+      </div>
+      <div class="progress-text" id="progressText">Loading checklist…</div>
+      <div class="actions-row">
+        <button class="btn btn-ghost" id="btnExcel">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M4 4h16v16H4z" stroke="currentColor" stroke-width="1.6"/><path d="M8 9l8 6M16 9l-8 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          Excel
+        </button>
+        <button class="btn btn-primary" id="btnPdf">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 3v13m0 0l-4-4m4 4l4-4M5 19h14" stroke="#0c2b26" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Report
+        </button>
+        <button class="btn btn-ghost" id="btnSettings" title="Drive sync settings" aria-label="Settings">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z" stroke="currentColor" stroke-width="1.6"/><path d="M19.4 13a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V19a2 2 0 11-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H4a2 2 0 110-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H10a1.65 1.65 0 001-1.51V4a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V10a1.65 1.65 0 001.51 1H20a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z" stroke="currentColor" stroke-width="1.3"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tabs-wrap">
+  <div class="tabs" id="tabs"></div>
+</div>
+
+<div class="content" id="content">
+  <div class="loading-wrap">
+    <div class="spinner"></div>
+    <div>Loading shared checklist data…</div>
+  </div>
+</div>
+
+<div class="footer-note">Data is shared — updates from any device on this link sync here. Photos are stored compressed for space.</div>
+
+<div id="toast" class="toast"></div>
+
+<div id="settingsModal" class="modal-overlay" style="display:none;">
+  <div class="modal-box">
+    <div class="modal-title">Google Drive sync</div>
+    <p class="modal-desc">Paste your deployed Apps Script Web App URL below. Once saved, every before/after photo taken on <strong>any device</strong> will auto-file into your Drive under <em>Date → Block → Inspector name</em>. This is shared — set it once for everyone.</p>
+    <input id="driveUrlInput" class="modal-input" type="url" placeholder="https://script.google.com/macros/s/XXXXX/exec" autocomplete="off">
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="btnHowTo" type="button">How do I get this URL?</button>
+      <div style="flex:1"></div>
+      <button class="btn btn-ghost" id="btnSettingsCancel" type="button">Cancel</button>
+      <button class="btn btn-primary" id="btnSettingsSave" type="button">Save</button>
+    </div>
+    <div id="howToBox" class="howto-box" style="display:none;"></div>
+  </div>
+</div>
+
+<script>
+window.__CHECKLIST_DATA__ = 
+[{"block": "Block A", "items": [{"section": "Roof Area – Terrace", "subheader": "Staircase 1", "text": "Lift mumty/ Stair case mumty"}, {"section": "Roof Area – Terrace", "subheader": "Staircase 2", "text": "Lift mumty/ Stair case mumty/ over head water tank mumty"}, {"section": "Roof Area – Terrace", "subheader": "Roof top", "text": "Conduct visual inspection across all roof zones for cracks, undulations, and surface damage"}, {"section": "Roof Area – Terrace", "subheader": "Roof top", "text": "Re-apply waterproofing treatment in patch areas where membrane deterioration is observed"}, {"section": "Roof Area – Terrace", "subheader": "Roof top", "text": "Strengthen rainwater outlet joints using PU sealant to prevent seepage"}, {"section": "Roof Area – Terrace", "subheader": "Roof top", "text": "Clean and de-choke all drainage pipes and khurras to ensure free flow"}, {"section": "Roof Area – Terrace", "subheader": "Roof top", "text": "Re-cast low-slope roof areas (if required) to maintain proper drainage slope"}, {"section": "Roof Area – Terrace", "subheader": "Roof top", "text": "All shaft ducting, Plumbing and cable tray sealed propely"}, {"section": "Roof Area – Terrace", "subheader": "Roof top", "text": "Renew waterproof coating in utility roof and other high-exposure service zones"}, {"section": "Façade – Glass & ACP Cladding", "subheader": "Façade – Glass & ACP Cladding", "text": "Inspect all vertical and horizontal ACP joints for gaps or signs of loosening"}, {"section": "Façade – Glass & ACP Cladding", "subheader": "Façade – Glass & ACP Cladding", "text": "Re-apply silicon sealant where existing sealant is cracked, aged, or missing"}, {"section": "Façade – Glass & ACP Cladding", "subheader": "Façade – Glass & ACP Cladding", "text": "Replace damaged or loose gaskets in all glass frames"}, {"section": "Façade – Glass & ACP Cladding", "subheader": "Façade – Glass & ACP Cladding", "text": "Check and secure ACP cladding elements, especially at building corners and anchor points"}, {"section": "Façade – Glass & ACP Cladding", "subheader": "Façade – Glass & ACP Cladding", "text": "Perapit ACP sheet silicon visual inspection"}, {"section": "Drainage System", "subheader": "Landscape area", "text": "Clean stormwater drains and gully traps to prevent clogging during rainfall"}, {"section": "Drainage System", "subheader": "Landscape area", "text": "De-silt all manholes and check for any blockages or structural issues"}, {"section": "Drainage System", "subheader": "Landscape area", "text": "Rain harvest manholes need to check for any cracked/ civil work"}, {"section": "Electrical & Pump Rooms", "subheader": "BMW Exit Gate", "text": "Test all pumps and confirm their operational readiness"}, {"section": "Electrical & Pump Rooms", "subheader": "BMW Exit Gate", "text": "Inspect harvesting/sump pits for blockages or damage"}, {"section": "Electrical & Pump Rooms", "subheader": "BMW Exit Gate", "text": "Inspect rain water havesting pit (if required) need to clean"}]}, {"block": "Block B", "items": [{"section": "Roof Area – Terrace", "subheader": "Staircase 1", "text": "Lift mumty/ Stair case mumty"}, {"section": "Roof Area – Terrace", "subheader": "Staircase 2", "text": "Lift mumty/ Stair case mumty/ over head water tank mumty"}, {"section": "Roof Area – Terrace", "subheader": "Roof top", "text": "Conduct visual inspection across all roof zones for cracks, undulations, and surface damage"}, {"section": "Roof Area – Terrace", "subheader": "Roof top", "text": "Re-apply waterproofing treatment in patch areas where membrane deterioration is observed"}, {"section": "Roof Area – Terrace", "subheader": "Roof top", "text": "Strengthen rainwater outlet joints using PU sealant to prevent seepage"}, {"section": "Roof Area – Terrace", "subheader": "Roof top", "text": "Clean and de-choke all drainage pipes and khurras to ensure free flow"}, {"section": "Roof Area – Terrace", "subheader": "Roof top", "text": "Re-cast low-slope roof areas (if required) to maintain proper drainage slope"}, {"section": "Roof Area – Terrace", "subheader": "Roof top", "text": "All shaft ducting, Plumbing and cable tray sealed propely"}, {"section": "Roof Area – Terrace", "subheader": "Roof top", "text": "Renew waterproof coating in utility roof and other high-exposure service zones"}, {"section": "Façade – Glass & ACP Cladding", "subheader": "Façade – Glass & ACP Cladding", "text": "Inspect all vertical and horizontal ACP joints for gaps or signs of loosening"}, {"section": "Façade – Glass & ACP Cladding", "subheader": "Façade – Glass & ACP Cladding", "text": "Re-apply silicone sealant where existing sealant is cracked, aged, or missing"}, {"section": "Façade – Glass & ACP Cladding", "subheader": "Façade – Glass & ACP Cladding", "text": "Replace damaged or loose gaskets in all glass frames"}, {"section": "Façade – Glass & ACP Cladding", "subheader": "Façade – Glass & ACP Cladding", "text": "Check and secure ACP cladding elements, especially at building corners and anchor points"}, {"section": "Façade – Glass & ACP Cladding", "subheader": "Façade – Glass & ACP Cladding", "text": "Perapit ACP sheet silicone visual inspection"}, {"section": "Expansion Joints & Junctions", "subheader": "Joints", "text": "Check all structural expansion joints for flexibility, wear & tear"}, {"section": "Expansion Joints & Junctions", "subheader": "Joints", "text": "Seal expansion joints using approved elastomeric waterproofing compounds"}, {"section": "Expansion Joints & Junctions", "subheader": "Joints", "text": "Reinforce wall-to-roof and glass-to-slab junctions with hybrid waterproof membranes or sealants"}, {"section": "Drainage System", "subheader": "Landscape area", "text": "Clean stormwater drains and gully traps to prevent clogging during rainfall"}, {"section": "Drainage System", "subheader": "Landscape area", "text": "De-silt all manholes and check for any blockages or structural issues"}, {"section": "Drainage System", "subheader": "Landscape area", "text": "Rain harvest manholes need to check for any cracked/ civil work"}, {"section": "Electrical & Pump Rooms", "subheader": "Main Gate near EV charging", "text": "Test all pumps and confirm their operational readiness"}, {"section": "Electrical & Pump Rooms", "subheader": "Main Gate near EV charging", "text": "Inspect harvesting/sump pits for blockages or damage"}, {"section": "Electrical & Pump Rooms", "subheader": "Main Gate near EV charging", "text": "Inspect rain water havesting pit (if required) need to clean"}, {"section": "Common Basement", "subheader": "Block B & C", "text": "Test all pumps and confirm their operational readiness"}, {"section": "Common Basement", "subheader": "Block B & C", "text": "Inspect sump pits for blockages or damage;"}, {"section": "Common Basement", "subheader": "Block B & C", "text": "(i) Facility office sump pit"}, {"section": "Common Basement", "subheader": "Block B & C", "text": "(ii) Near B & C lift lobby front side sump pit"}, {"section": "Common Basement", "subheader": "Block B & C", "text": "(iii) Near Staff washroom sump pit"}, {"section": "Common Basement", "subheader": "Block B & C", "text": "(iv) DG room sump pit"}, {"section": "Common Basement", "subheader": "Block B & C", "text": "All side rentention walls core cutting for Plumbing & cable tray sealed propely"}, {"section": "Common Basement", "subheader": "Block B & C", "text": "PVC stormwater drainage pipe proper sealent with grouting"}, {"section": "Common Basement", "subheader": "Block B & C", "text": "All basement trench need to be clean and civil repair (if required)"}, {"section": "Common Basement", "subheader": "Block B & C", "text": "Check addition drain out provision through fire hydrant line in pump room"}, {"section": "Common Basement", "subheader": "Block B & C", "text": "Check all structural expansion joints for flexibility, wear & tear"}, {"section": "Emergency Precaution", "subheader": "", "text": "Sandbags to ready for in ramp water flow"}]}, {"block": "Block C", "items": [{"section": "Roof Area – Terrace", "subheader": "Staircase 1", "text": "Lift mumty/ Stair case mumty"}, {"section": "Roof Area – Terrace", "subheader": "Staircase 2", "text": "Lift mumty/ Stair case mumty/ over head water tank mumty"}, {"section": "Roof Area – Terrace", "subheader": "Roof top", "text": "Conduct visual inspection across all roof zones for cracks, undulations, and surface damage"}, {"section": "Roof Area – Terrace", "subheader": "Roof top", "text": "Re-apply waterproofing treatment in patch areas where membrane deterioration is observed"}, {"section": "Roof Area – Terrace", "subheader": "Roof top", "text": "Strengthen rainwater outlet joints using PU sealant to prevent seepage"}, {"section": "Roof Area – Terrace", "subheader": "Roof top", "text": "Clean and de-choke all drainage pipes and khurras to ensure free flow"}, {"section": "Roof Area – Terrace", "subheader": "Roof top", "text": "Re-cast low-slope roof areas (if required) to maintain proper drainage slope"}, {"section": "Roof Area – Terrace", "subheader": "Roof top", "text": "All shaft ducting, Plumbing and cable tray sealed propely"}, {"section": "Roof Area – Terrace", "subheader": "Roof top", "text": "Renew waterproof coating in utility roof and other high-exposure service zones"}, {"section": "Façade – Glass & ACP Cladding", "subheader": "Façade – Glass & ACP Cladding", "text": "Inspect all vertical and horizontal ACP joints for gaps or signs of loosening"}, {"section": "Façade – Glass & ACP Cladding", "subheader": "Façade – Glass & ACP Cladding", "text": "Re-apply silicone sealant where existing sealant is cracked, aged, or missing"}, {"section": "Façade – Glass & ACP Cladding", "subheader": "Façade – Glass & ACP Cladding", "text": "Replace damaged or loose gaskets in all glass frames"}, {"section": "Façade – Glass & ACP Cladding", "subheader": "Façade – Glass & ACP Cladding", "text": "Check and secure ACP cladding elements, especially at building corners and anchor points"}, {"section": "Façade – Glass & ACP Cladding", "subheader": "Façade – Glass & ACP Cladding", "text": "Perapit ACP sheet silicone visual inspection"}, {"section": "Drainage System", "subheader": "Landscape area", "text": "Clean stormwater drains and gully traps to prevent clogging during rainfall"}, {"section": "Drainage System", "subheader": "Landscape area", "text": "De-silt all manholes and check for any blockages or structural issues"}, {"section": "Drainage System", "subheader": "Landscape area", "text": "Rain harvest manholes need to check for any cracked/ civil work"}, {"section": "Electrical & Pump Rooms", "subheader": "Main Gate near EV charging", "text": "Test all pumps and confirm their operational readiness"}, {"section": "Electrical & Pump Rooms", "subheader": "Main Gate near EV charging", "text": "Inspect harvesting/sump pits for blockages or damage"}, {"section": "Electrical & Pump Rooms", "subheader": "Main Gate near EV charging", "text": "Inspect rain water havesting pit (if required) need to clean"}]}, {"block": "Block D", "items": [{"section": "TPO ROOF # 1", "subheader": "North Side SIM HALL -1", "text": "Physically inspect entire TPO membrane for punctures, tearing, delamination, loose edges"}, {"section": "TPO ROOF # 1", "subheader": "North Side SIM HALL -2", "text": "Physically inspect entire TPO sheet rewinkeled/saging."}, {"section": "TPO ROOF # 1", "subheader": "North Side SIM HALL -3", "text": "Check termination bars and ensure all edges are sealed and clamped"}, {"section": "TPO ROOF # 1", "subheader": "North Side SIM HALL -4", "text": "Check and clean guter and drainage for any kind of blockage"}, {"section": "TPO ROOF # 1", "subheader": "North Side SIM HALL -5", "text": "Check Parapet ACP sheet joints silicon and top side silicon"}, {"section": "TPO ROOF # 1", "subheader": "North Side SIM HALL -6", "text": "TPO to 3rd floor ACP sheet joint, grouve and windows silicone needs to be check for crack and damages"}, {"section": "TPO ROOF # 2", "subheader": "South Side SIM HALL-2", "text": "Physically inspect entire TPO membrane for punctures, tearing, delamination, loose edges"}, {"section": "TPO ROOF # 2", "subheader": "South Side SIM HALL-2", "text": "Physically inspect entire TPO sheet rewinkeled/saging."}, {"section": "TPO ROOF # 2", "subheader": "South Side SIM HALL-2", "text": "Check termination bars and ensure all edges are sealed and clamped"}, {"section": "TPO ROOF # 2", "subheader": "South Side SIM HALL-2", "text": "Check and clean guter and drainage for any kind of blockage"}, {"section": "TPO ROOF # 2", "subheader": "South Side SIM HALL-2", "text": "Check Parapet ACP sheet joints silicon and top side silicon"}, {"section": "TPO ROOF # 2", "subheader": "South Side SIM HALL-2", "text": "TPO to 3rd floor colum and beam joint civil work need to be check"}, {"section": "Terrace", "subheader": "Utility Area", "text": "Conduct visual inspection across all roof zones for cracks, undulations, and surface damage"}, {"section": "Terrace", "subheader": "Utility Area", "text": "Check Terrace and Parapet Junctions for any cracks or damage of south side"}, {"section": "Terrace", "subheader": "Utility Area", "text": "Parapet ACP sheet joint & Top side silicon needs to be checked"}, {"section": "Terrace", "subheader": "Utility Area", "text": "Check doghouse Junctions and entrypoints of services"}, {"section": "Terrace", "subheader": "Utility Area", "text": "Clean and de-choke all drainage pipes and khurras to ensure free flow"}, {"section": "Terrace", "subheader": "Utility Area", "text": "All shaft ducting, Plumbing and cable tray sealed propely"}, {"section": "Terrace", "subheader": "Utility Area", "text": "Re-cast low-slope roof areas (if required) to maintain proper drainage slope"}, {"section": "Terrace", "subheader": "Utility Area", "text": "Re-apply waterproofing treatment in patch areas where any type of cracks/damage at roof top/ chiller plant foundation"}, {"section": "Terrace", "subheader": "Utility Area", "text": "Check Lift Mumty drain line roof cracks and parapet"}, {"section": "Terrace", "subheader": "Utility Area", "text": "Lift lobby/Stair case -1 mumty needs to be check for drain line and parapet"}, {"section": "Terrace", "subheader": "Utility Area", "text": "Stair case -2 mumty needs to be check for drain line and parapet"}, {"section": "Terrace", "subheader": "Utility Area", "text": "Fire door bottom side scartting needs to be check"}, {"section": "ACP & Glazing Façade", "subheader": "North Side-24 mtr road side", "text": "Check ACP panel joints (vertical & horizontal grouve) for open gaps or aging sealant – re-fill with silicon"}, {"section": "ACP & Glazing Façade", "subheader": "North Side-24 mtr road side", "text": "Inspect all glass joints, corners, and transitions for cracks or peeling in sealant"}, {"section": "ACP & Glazing Façade", "subheader": "North Side-24 mtr road side", "text": "Seal all wire penetrations through ACP with PU sealant or appropriate flashings"}, {"section": "ACP & Glazing Façade", "subheader": "North Side-24 mtr road side", "text": "Check façade and plinth junction for any wateringress point and seal it"}, {"section": "ACP & Glazing Façade", "subheader": "North Side-24 mtr road side", "text": "Check all façade bottom stone grout"}, {"section": "ACP & Glazing Façade", "subheader": "East Side-Receiption side", "text": "Check ACP panel joints (vertical & horizontal grouve) for open gaps or aging sealant – re-fill with silicon"}, {"section": "ACP & Glazing Façade", "subheader": "East Side-Receiption side", "text": "Inspect all glass joints, corners, and transitions for cracks or peeling in sealant"}, {"section": "ACP & Glazing Façade", "subheader": "East Side-Receiption side", "text": "Seal all wire penetrations through ACP with PU sealant or appropriate flashings"}, {"section": "ACP & Glazing Façade", "subheader": "East Side-Receiption side", "text": "Check façade and plinth junction for any wateringress point and seal it"}, {"section": "ACP & Glazing Façade", "subheader": "East Side-Receiption side", "text": "Check all façade bottom stone grout"}, {"section": "ACP & Glazing Façade", "subheader": "West Side-Security cabin side", "text": "Check ACP panel joints (vertical & horizontal) for open gaps or aging sealant – re-caulk with silicone"}, {"section": "ACP & Glazing Façade", "subheader": "West Side-Security cabin side", "text": "Inspect all glass joints, corners, and transitions for cracks or peeling in sealant"}, {"section": "ACP & Glazing Façade", "subheader": "West Side-Security cabin side", "text": "Ensure built-in façade drainage channels are clear and operational"}, {"section": "ACP & Glazing Façade", "subheader": "West Side-Security cabin side", "text": "Seal all pipe/wire penetrations through ACP with PU sealant or appropriate flashings"}, {"section": "ACP & Glazing Façade", "subheader": "West Side-Security cabin side", "text": "Check all façade bottom stone grout"}, {"section": "ACP, Glazing Façade & Masonry work", "subheader": "South Side-LT Room side", "text": "Inspect masonry/concrete walls for cracks, efflorescence, or seepage"}, {"section": "ACP, Glazing Façade & Masonry work", "subheader": "South Side-LT Room side", "text": "Apply clear waterproof coat or elastomeric paint if surface untreated"}, {"section": "ACP, Glazing Façade & Masonry work", "subheader": "South Side-LT Room side", "text": "Windows sealant needs to be checked"}, {"section": "ACP, Glazing Façade & Masonry work", "subheader": "South Side-LT Room side", "text": "Check and seal joints between metal beams and masonry"}, {"section": "ACP, Glazing Façade & Masonry work", "subheader": "South Side-LT Room side", "text": "Inspect and seal window frame joints"}, {"section": "SIM Hall", "subheader": "SIM Hall-2", "text": "Check ACP panel joints (vertical & horizontal) for open gaps or aging sealant – re-caulk with silicone"}, {"section": "SIM Hall", "subheader": "SIM Hall-2", "text": "Inspect all glass joints, corners, and transitions for cracks or peeling in sealant"}, {"section": "SIM Hall", "subheader": "SIM Hall-2", "text": "Ensure built-in façade drainage channels are clear and operational"}, {"section": "SIM Hall", "subheader": "SIM Hall-2", "text": "Seal all pipe/wire penetrations through ACP with PU sealant or appropriate flashings"}, {"section": "SIM Hall", "subheader": "SIM Hall-2", "text": "Check all façade bottom stone grout"}, {"section": "Drainage & Surface Run-Off", "subheader": "North Side-24 mtr road side", "text": "Confirm all roof downpipes are connected to stormwater drains"}, {"section": "Drainage & Surface Run-Off", "subheader": "North Side-24 mtr road side", "text": "Ensure ground slope directs water away from the building"}, {"section": "Drainage & Surface Run-Off", "subheader": "North Side-24 mtr road side", "text": "Check trench covers, façade drain gates, and main entry drainage for blockages/damage"}, {"section": "Drainage & Surface Run-Off", "subheader": "East Side-Receiption side", "text": "Confirm all roof downpipes are connected to stormwater drains"}, {"section": "Drainage & Surface Run-Off", "subheader": "East Side-Receiption side", "text": "Ensure ground slope directs water away from the building"}, {"section": "Drainage & Surface Run-Off", "subheader": "East Side-Receiption side", "text": "Check trench covers, façade drain gates, and main entry drainage for blockages/damage"}, {"section": "Drainage & Surface Run-Off", "subheader": "East Side-Receiption side", "text": "Boundary wall need to be checked for any seepage/leekage or damage"}, {"section": "Drainage & Surface Run-Off", "subheader": "West Side-Security cabin side", "text": "Confirm all roof downpipes are connected to stormwater drains"}, {"section": "Drainage & Surface Run-Off", "subheader": "West Side-Security cabin side", "text": "Ensure ground slope directs water away from the building"}, {"section": "Drainage & Surface Run-Off", "subheader": "West Side-Security cabin side", "text": "Check trench covers, façade drain gates, and main entry drainage for blockages/damage"}, {"section": "Drainage & Surface Run-Off", "subheader": "West Side-Security cabin side", "text": "Boundary wall need to be checked for any seepage/leekage or damage"}, {"section": "Drainage & Surface Run-Off", "subheader": "South Side-LT Room side", "text": "Confirm all roof downpipes are connected to stormwater drains"}, {"section": "Drainage & Surface Run-Off", "subheader": "South Side-LT Room side", "text": "Ensure ground slope directs water away from the building"}, {"section": "Drainage & Surface Run-Off", "subheader": "South Side-LT Room side", "text": "Check trench covers, façade drain grates, and main entry drainage for blockages"}, {"section": "Drainage & Surface Run-Off", "subheader": "South Side-LT Room side", "text": "Boundary wall need to be checked for any seepage/leekage or damage"}, {"section": "All side of Block", "subheader": "Rolling Shutters", "text": "Check the bottom seal"}, {"section": "All side of Block", "subheader": "Rolling Shutters", "text": "Check the side junctions"}, {"section": "All side of Block", "subheader": "Rolling Shutters", "text": "Both side rail sealant needs to be check"}, {"section": "All side of Block", "subheader": "Fire Doors", "text": "Check all door thresholds for proper sloping or sealing"}, {"section": "All side of Block", "subheader": "Fire Doors", "text": "Apply silicone/weatherstrips where metal frames meet doors"}, {"section": "All side of Block", "subheader": "Fire Doors", "text": "Verify sill drainage and sealant continuity for glass entrances"}, {"section": "Electrical", "subheader": "Electrical /MEP Entry Points", "text": "Inspect all MEP/cable entries (AC ducts, trays, conduits) for waterproof sealing"}, {"section": "Electrical", "subheader": "Electrical /MEP Entry Points", "text": "Seal any gaps with bitumen-based or fire-retardant sealant"}, {"section": "Electrical", "subheader": "Electrical /MEP Entry Points", "text": "Check the Pull pit chambers and seal the cables /wall joints"}, {"section": "Electrical", "subheader": "Electrical /MEP Entry Points", "text": "Visual inspection LT room roof top shad for waterproofing"}, {"section": "Electrical", "subheader": "Electrical /MEP Entry Points", "text": "Visual inspection VCB room roof top shad for waterproofing"}, {"section": "Electrical", "subheader": "Electrical /MEP Entry Points", "text": "Drainage should be free from any blockage"}, {"section": "LANDSCAPE & QUICK RESPONSE", "subheader": "Plumbing & Drainage Readiness", "text": "All plumbing pipe shafts across D block to be inspected for leakage or exposure."}, {"section": "LANDSCAPE & QUICK RESPONSE", "subheader": "Plumbing & Drainage Readiness", "text": "D block landscape drainage lines to be cleaned and cleared of debris."}, {"section": "LANDSCAPE & QUICK RESPONSE", "subheader": "Plumbing & Drainage Readiness", "text": "Strom water line need to checked and clean"}, {"section": "LANDSCAPE & QUICK RESPONSE", "subheader": "Plumbing & Drainage Readiness", "text": "All strom water chamber need to be check for any kind of masonary work"}, {"section": "LANDSCAPE & QUICK RESPONSE", "subheader": "Emergency Measures & Quick Response", "text": "Sandbags to be positioned near south side boundary wall outside."}, {"section": "LANDSCAPE & QUICK RESPONSE", "subheader": "Emergency Measures & Quick Response", "text": "Quick-response waterproofing kits to be made available with the site team for immediate patchwork in case of water seepage or leakage."}, {"section": "LANDSCAPE & QUICK RESPONSE", "subheader": "Emergency Measures & Quick Response", "text": "All Team briefed for monsoon support to facility team."}]}, {"block": "Block E", "items": [{"section": "Roof Area – Terrace", "subheader": "Staircase 1", "text": "Lift mumty/ Stair case mumty"}, {"section": "Roof Area – Terrace", "subheader": "Staircase 2", "text": "Stair case canopy structure damaged/ paint (if required)"}, {"section": "Roof Area – Terrace", "subheader": "Roof top", "text": "Conduct visual inspection across all roof zones for cracks, undulations, and surface damage"}, {"section": "Roof Area – Terrace", "subheader": "Roof top", "text": "Re-apply waterproofing treatment in patch areas where membrane deterioration is observed"}, {"section": "Roof Area – Terrace", "subheader": "Roof top", "text": "Strengthen rainwater outlet joints using PU sealant to prevent seepage"}, {"section": "Roof Area – Terrace", "subheader": "Roof top", "text": "Clean and de-choke all drainage pipes and khurras to ensure free flow"}, {"section": "Roof Area – Terrace", "subheader": "Roof top", "text": "Re-cast low-slope roof areas (if required) to maintain proper drainage slope"}, {"section": "Roof Area – Terrace", "subheader": "Roof top", "text": "All shaft ducting, Plumbing and cable tray sealed propely"}, {"section": "Roof Area – Terrace", "subheader": "Roof top", "text": "Renew waterproof coating in utility roof and other high-exposure service zones"}, {"section": "Façade – Glass & ACP Cladding", "subheader": "Façade – Glass & ACP Cladding", "text": "Inspect all vertical and horizontal ACP joints for gaps or signs of loosening"}, {"section": "Façade – Glass & ACP Cladding", "subheader": "Façade – Glass & ACP Cladding", "text": "Re-apply silicon sealant where existing sealant is cracked, aged, or missing"}, {"section": "Façade – Glass & ACP Cladding", "subheader": "Façade – Glass & ACP Cladding", "text": "Replace damaged or loose gaskets in all glass frames"}, {"section": "Façade – Glass & ACP Cladding", "subheader": "Façade – Glass & ACP Cladding", "text": "Check and secure ACP cladding elements, especially at building corners and anchor points"}, {"section": "Façade – Glass & ACP Cladding", "subheader": "Façade – Glass & ACP Cladding", "text": "Parapet ACP sheet silicon visual inspection"}, {"section": "Drainage System", "subheader": "Landscape area", "text": "Clean stormwater drains and gully traps to prevent clogging during rainfall"}, {"section": "Drainage System", "subheader": "Landscape area", "text": "De-silt all manholes and check for any blockages or structural issues"}, {"section": "Drainage System", "subheader": "Landscape area", "text": "Rain harvest manholes need to check for any cracked/ civil work"}, {"section": "Basment", "subheader": "~", "text": "All side rentention walls core cutting for Plumbing & cable tray sealed propely"}, {"section": "Basment", "subheader": "~", "text": "PVC stormwater drainage pipe proper sealent with grouting"}, {"section": "Basment", "subheader": "~", "text": "All basement trench need to be clean and civil repair (if required)"}, {"section": "Basment", "subheader": "~", "text": "Sky glass need to be check for seepage/leekage or damaged or any re-silicon required"}]}, {"block": "Block F", "items": [{"section": "ROOF # 1", "subheader": "North Side SIM HALL -1", "text": "Physically inspect entire TPO membrane for punctures, tearing, delamination, loose edges"}, {"section": "ROOF # 1", "subheader": "North Side SIM HALL -1", "text": "Physically inspect entire TPO sheet rewinkeled/saging."}, {"section": "ROOF # 1", "subheader": "North Side SIM HALL -1", "text": "Check termination bars and ensure all edges are sealed and clamped"}, {"section": "ROOF # 1", "subheader": "North Side SIM HALL -1", "text": "Check and clean guter and drainage for any kind of blockage"}, {"section": "ROOF # 1", "subheader": "North Side SIM HALL -1", "text": "Check Parapet ACP sheet joints silicon and top side silicon"}, {"section": "ROOF # 1", "subheader": "North Side SIM HALL -1", "text": "TPO to 3rd floor ACP sheet joint, grouve and windows silicone needs to be check for crack and damages"}, {"section": "ROOF # 2", "subheader": "South Side SIM HALL-2", "text": "Physically inspect entire TPO membrane for punctures, tearing, delamination, loose edges"}, {"section": "ROOF # 2", "subheader": "South Side SIM HALL-2", "text": "Physically inspect entire TPO sheet rewinkeled/saging."}, {"section": "ROOF # 2", "subheader": "South Side SIM HALL-2", "text": "Check termination bars and ensure all edges are sealed and clamped"}, {"section": "ROOF # 2", "subheader": "South Side SIM HALL-2", "text": "Check and clean guter and drainage for any kind of blockage"}, {"section": "ROOF # 2", "subheader": "South Side SIM HALL-2", "text": "Check Parapet ACP sheet joints silicon and top side silicon"}, {"section": "ROOF # 2", "subheader": "South Side SIM HALL-2", "text": "TPO to 3rd floor colum and beam joint civil work need to be check"}, {"section": "Terrace", "subheader": "Utility Area", "text": "Conduct visual inspection across all roof zones for cracks, undulations, and surface damage"}, {"section": "Terrace", "subheader": "Utility Area", "text": "Check Terrace and Parapet Junctions for any cracks or damage of south side"}, {"section": "Terrace", "subheader": "Utility Area", "text": "Parapet ACP sheet joint & Top side silicon needs to be checked"}, {"section": "Terrace", "subheader": "Utility Area", "text": "Check doghouse Junctions and entrypoints of services"}, {"section": "Terrace", "subheader": "Utility Area", "text": "Clean and de-choke all drainage pipes and khurras to ensure free flow"}, {"section": "Terrace", "subheader": "Utility Area", "text": "All shaft ducting, Plumbing and cable tray sealed propely"}, {"section": "Terrace", "subheader": "Utility Area", "text": "Re-cast low-slope roof areas (if required) to maintain proper drainage slope"}, {"section": "Terrace", "subheader": "Utility Area", "text": "Re-apply waterproofing treatment in patch areas where any type of cracks/damage at roof top/ chiller plant foundation"}, {"section": "Terrace", "subheader": "Utility Area", "text": "Check Lift Mumty drain line roof cracks and parapet"}, {"section": "Terrace", "subheader": "Utility Area", "text": "Lift lobby/Stair case -1 mumty needs to be check for drain line and parapet"}, {"section": "Terrace", "subheader": "Utility Area", "text": "Stair case -2 mumty needs to be check for drain line and parapet"}, {"section": "Terrace", "subheader": "Utility Area", "text": "Fire door bottom side scartting needs to be check"}, {"section": "ACP & Glazing Façade", "subheader": "North Side-24 mtr road side", "text": "Check ACP panel joints (vertical & horizontal grouve) for open gaps or aging sealant – re-fill with silicon"}, {"section": "ACP & Glazing Façade", "subheader": "North Side-24 mtr road side", "text": "Inspect all glass joints, corners, and transitions for cracks or peeling in sealant"}, {"section": "ACP & Glazing Façade", "subheader": "North Side-24 mtr road side", "text": "Seal all wire penetrations through ACP with PU sealant or appropriate flashings"}, {"section": "ACP & Glazing Façade", "subheader": "North Side-24 mtr road side", "text": "Check façade and plinth junction for any wateringress point and seal it"}, {"section": "ACP & Glazing Façade", "subheader": "North Side-24 mtr road side", "text": "Check all façade bottom stone grout"}, {"section": "ACP & Glazing Façade", "subheader": "East Side-Receiption side", "text": "Check ACP panel joints (vertical & horizontal grouve) for open gaps or aging sealant – re-fill with silicon"}, {"section": "ACP & Glazing Façade", "subheader": "East Side-Receiption side", "text": "Inspect all glass joints, corners, and transitions for cracks or peeling in sealant"}, {"section": "ACP & Glazing Façade", "subheader": "East Side-Receiption side", "text": "Seal all wire penetrations through ACP with PU sealant or appropriate flashings"}, {"section": "ACP & Glazing Façade", "subheader": "East Side-Receiption side", "text": "Check façade and plinth junction for any wateringress point and seal it"}, {"section": "ACP & Glazing Façade", "subheader": "East Side-Receiption side", "text": "Check all façade bottom stone grout"}, {"section": "ACP & Glazing Façade", "subheader": "West Side-Security cabin side", "text": "Check ACP panel joints (vertical & horizontal) for open gaps or aging sealant – re-caulk with silicone"}, {"section": "ACP & Glazing Façade", "subheader": "West Side-Security cabin side", "text": "Inspect all glass joints, corners, and transitions for cracks or peeling in sealant"}, {"section": "ACP & Glazing Façade", "subheader": "West Side-Security cabin side", "text": "Ensure built-in façade drainage channels are clear and operational"}, {"section": "ACP & Glazing Façade", "subheader": "West Side-Security cabin side", "text": "Seal all pipe/wire penetrations through ACP with PU sealant or appropriate flashings"}, {"section": "ACP & Glazing Façade", "subheader": "West Side-Security cabin side", "text": "Check all façade bottom stone grout"}, {"section": "ACP & Glazing Façade", "subheader": "South Side-LT Room side", "text": "Inspect masonry/concrete walls for cracks, efflorescence, or seepage"}, {"section": "ACP & Glazing Façade", "subheader": "South Side-LT Room side", "text": "Apply clear waterproof coat or elastomeric paint if surface untreated"}, {"section": "ACP & Glazing Façade", "subheader": "South Side-LT Room side", "text": "Windows sealant needs to be checked"}, {"section": "ACP & Glazing Façade", "subheader": "South Side-LT Room side", "text": "Check and seal joints between metal beams and masonry"}, {"section": "ACP & Glazing Façade", "subheader": "South Side-LT Room side", "text": "Inspect and seal window frame joints"}, {"section": "SIM Hall", "subheader": "SIM Hall-1", "text": "Check ACP panel joints (vertical & horizontal) for open gaps or aging sealant – re-caulk with silicone"}, {"section": "SIM Hall", "subheader": "SIM Hall-1", "text": "Inspect all glass joints, corners, and transitions for cracks or peeling in sealant"}, {"section": "SIM Hall", "subheader": "SIM Hall-1", "text": "Ensure built-in façade drainage channels are clear and operational"}, {"section": "SIM Hall", "subheader": "SIM Hall-1", "text": "Seal all pipe/wire penetrations through ACP with PU sealant or appropriate flashings"}, {"section": "SIM Hall", "subheader": "SIM Hall-1", "text": "Check all façade bottom stone grout"}, {"section": "SIM Hall", "subheader": "SIM Hall-2", "text": "Check ACP panel joints (vertical & horizontal) for open gaps or aging sealant – re-caulk with silicone"}, {"section": "SIM Hall", "subheader": "SIM Hall-2", "text": "Inspect all glass joints, corners, and transitions for cracks or peeling in sealant"}, {"section": "SIM Hall", "subheader": "SIM Hall-2", "text": "Ensure built-in façade drainage channels are clear and operational"}, {"section": "SIM Hall", "subheader": "SIM Hall-2", "text": "Seal all pipe/wire penetrations through ACP with PU sealant or appropriate flashings"}, {"section": "SIM Hall", "subheader": "SIM Hall-2", "text": "Check all façade bottom stone grout"}, {"section": "Drainage & Surface Run-Off", "subheader": "North Side-24 mtr road side", "text": "Confirm all roof downpipes are connected to stormwater drains"}, {"section": "Drainage & Surface Run-Off", "subheader": "North Side-24 mtr road side", "text": "Ensure ground slope directs water away from the building"}, {"section": "Drainage & Surface Run-Off", "subheader": "North Side-24 mtr road side", "text": "Check trench covers, façade drain gates, and main entry drainage for blockages/damage"}, {"section": "Drainage & Surface Run-Off", "subheader": "East Side-Receiption side", "text": "Confirm all roof downpipes are connected to stormwater drains"}, {"section": "Drainage & Surface Run-Off", "subheader": "East Side-Receiption side", "text": "Ensure ground slope directs water away from the building"}, {"section": "Drainage & Surface Run-Off", "subheader": "East Side-Receiption side", "text": "Check trench covers, façade drain gates, and main entry drainage for blockages/damage"}, {"section": "Drainage & Surface Run-Off", "subheader": "East Side-Receiption side", "text": "Boundary wall need to be checked for any seepage/leekage or damage"}, {"section": "Drainage & Surface Run-Off", "subheader": "West Side-Security cabin side", "text": "Confirm all roof downpipes are connected to stormwater drains"}, {"section": "Drainage & Surface Run-Off", "subheader": "West Side-Security cabin side", "text": "Ensure ground slope directs water away from the building"}, {"section": "Drainage & Surface Run-Off", "subheader": "West Side-Security cabin side", "text": "Check trench covers, façade drain gates, and main entry drainage for blockages/damage"}, {"section": "Drainage & Surface Run-Off", "subheader": "West Side-Security cabin side", "text": "Boundary wall need to be checked for any seepage/leekage or damage"}, {"section": "Drainage & Surface Run-Off", "subheader": "South Side-LT Room side", "text": "Confirm all roof downpipes are connected to stormwater drains"}, {"section": "Drainage & Surface Run-Off", "subheader": "South Side-LT Room side", "text": "Ensure ground slope directs water away from the building"}, {"section": "Drainage & Surface Run-Off", "subheader": "South Side-LT Room side", "text": "Check trench covers, façade drain grates, and main entry drainage for blockages"}, {"section": "Drainage & Surface Run-Off", "subheader": "South Side-LT Room side", "text": "Boundary wall need to be checked for any seepage/leekage or damage"}, {"section": "All side of Block", "subheader": "Rolling Shutters", "text": "Check the bottom seal"}, {"section": "All side of Block", "subheader": "Rolling Shutters", "text": "Check the side junctions"}, {"section": "All side of Block", "subheader": "Rolling Shutters", "text": "Both side rail sealant needs to be check"}, {"section": "All side of Block", "subheader": "Fire Doors", "text": "Check all door thresholds for proper sloping or sealing"}, {"section": "All side of Block", "subheader": "Fire Doors", "text": "Apply silicone/weatherstrips where metal frames meet doors"}, {"section": "All side of Block", "subheader": "Fire Doors", "text": "Verify sill drainage and sealant continuity for glass entrances"}, {"section": "Electrical", "subheader": "Electrical /MEP Entry Points", "text": "Inspect all MEP/cable entries (AC ducts, trays, conduits) for waterproof sealing"}, {"section": "Electrical", "subheader": "Electrical /MEP Entry Points", "text": "Seal any gaps with bitumen-based or fire-retardant sealant"}, {"section": "Electrical", "subheader": "Electrical /MEP Entry Points", "text": "Check the Pull pit chambers and seal the cables /wall joints"}, {"section": "Electrical", "subheader": "Electrical /MEP Entry Points", "text": "Visual inspection LT room roof top shad for waterproofing"}, {"section": "Electrical", "subheader": "Electrical /MEP Entry Points", "text": "Drainage should be free from any blockage"}, {"section": "LANDSCAPE & QUICK RESPONSE", "subheader": "Plumbing & Drainage Readiness", "text": "All plumbing pipe shafts across F block to be inspected for leakage or exposure."}, {"section": "LANDSCAPE & QUICK RESPONSE", "subheader": "Plumbing & Drainage Readiness", "text": "F block landscape drainage lines to be cleaned and cleared of debris."}, {"section": "LANDSCAPE & QUICK RESPONSE", "subheader": "Plumbing & Drainage Readiness", "text": "Strom water line need to checked and clean"}, {"section": "LANDSCAPE & QUICK RESPONSE", "subheader": "Plumbing & Drainage Readiness", "text": "All strom water chamber need to be check for any kind of masonary work"}, {"section": "LANDSCAPE & QUICK RESPONSE", "subheader": "Emergency Measures & Quick Response", "text": "Sandbags to be positioned near south side boundary wall outside."}, {"section": "LANDSCAPE & QUICK RESPONSE", "subheader": "Emergency Measures & Quick Response", "text": "Quick-response waterproofing kits to be made available with the site team for immediate patchwork in case of water seepage or leakage."}, {"section": "LANDSCAPE & QUICK RESPONSE", "subheader": "Emergency Measures & Quick Response", "text": "All Team briefed for monsoon support to facility team."}]}, {"block": "Block G", "items": [{"section": "TPO ROOF", "subheader": "~", "text": "Physically inspect entire TPO membrane for punctures, tearing, delamination, loose edges"}, {"section": "TPO ROOF", "subheader": "~", "text": "Physically inspect entire TPO sheet rewinkeled/saging."}, {"section": "TPO ROOF", "subheader": "~", "text": "Check termination bars and ensure all edges are sealed and clamped"}, {"section": "TPO ROOF", "subheader": "~", "text": "Check and clean guter and drainage for any kind of blockage"}, {"section": "TPO ROOF", "subheader": "~", "text": "Check Parapet ACP sheet joints silicon and top side silicon"}, {"section": "ACP & Glazing Façade", "subheader": "North Side-24 mtr road side", "text": "Check ACP panel joints (vertical & horizontal grouve) for open gaps or aging sealant – re-fill with silicon"}, {"section": "ACP & Glazing Façade", "subheader": "North Side-24 mtr road side", "text": "Inspect all glass joints, corners, and transitions for cracks or peeling in sealant"}, {"section": "ACP & Glazing Façade", "subheader": "North Side-24 mtr road side", "text": "Seal all wire penetrations through ACP with PU sealant or appropriate flashings"}, {"section": "ACP & Glazing Façade", "subheader": "North Side-24 mtr road side", "text": "Check façade and plinth junction for any wateringress point and seal it"}, {"section": "ACP & Glazing Façade", "subheader": "North Side-24 mtr road side", "text": "Check all façade bottom stone grout"}, {"section": "ACP & Glazing Façade", "subheader": "East Side-Receiption side", "text": "Check ACP panel joints (vertical & horizontal grouve) for open gaps or aging sealant – re-fill with silicon"}, {"section": "ACP & Glazing Façade", "subheader": "East Side-Receiption side", "text": "Inspect all glass joints, corners, and transitions for cracks or peeling in sealant"}, {"section": "ACP & Glazing Façade", "subheader": "East Side-Receiption side", "text": "Seal all wire penetrations through ACP with PU sealant or appropriate flashings"}, {"section": "ACP & Glazing Façade", "subheader": "East Side-Receiption side", "text": "Check façade and plinth junction for any wateringress point and seal it"}, {"section": "ACP & Glazing Façade", "subheader": "East Side-Receiption side", "text": "Check all façade bottom stone grout"}, {"section": "ACP & Glazing Façade", "subheader": "West Side-Security cabin side", "text": "Check ACP panel joints (vertical & horizontal) for open gaps or aging sealant – re-caulk with silicone"}, {"section": "ACP & Glazing Façade", "subheader": "West Side-Security cabin side", "text": "Inspect all glass joints, corners, and transitions for cracks or peeling in sealant"}, {"section": "ACP & Glazing Façade", "subheader": "West Side-Security cabin side", "text": "Ensure built-in façade drainage channels are clear and operational"}, {"section": "ACP & Glazing Façade", "subheader": "West Side-Security cabin side", "text": "Seal all pipe/wire penetrations through ACP with PU sealant or appropriate flashings"}, {"section": "ACP & Glazing Façade", "subheader": "West Side-Security cabin side", "text": "Check all façade bottom stone grout"}, {"section": "ACP & Glazing Façade", "subheader": "South Side-LT Room side", "text": "Inspect masonry/concrete walls for cracks, efflorescence, or seepage"}, {"section": "ACP & Glazing Façade", "subheader": "South Side-LT Room side", "text": "Apply clear waterproof coat or elastomeric paint if surface untreated"}, {"section": "ACP & Glazing Façade", "subheader": "South Side-LT Room side", "text": "Windows sealant needs to be checked"}, {"section": "ACP & Glazing Façade", "subheader": "South Side-LT Room side", "text": "Check and seal joints between metal beams and masonry"}, {"section": "ACP & Glazing Façade", "subheader": "South Side-LT Room side", "text": "Inspect and seal window frame joints"}, {"section": "Drainage & Surface Run-Off", "subheader": "North Side-24 mtr road side", "text": "Confirm all roof downpipes are connected to stormwater drains"}, {"section": "Drainage & Surface Run-Off", "subheader": "North Side-24 mtr road side", "text": "Ensure ground slope directs water away from the building"}, {"section": "Drainage & Surface Run-Off", "subheader": "North Side-24 mtr road side", "text": "Check trench covers, façade drain gates, and main entry drainage for blockages/damage"}, {"section": "Drainage & Surface Run-Off", "subheader": "East Side-Receiption side", "text": "Confirm all roof downpipes are connected to stormwater drains"}, {"section": "Drainage & Surface Run-Off", "subheader": "East Side-Receiption side", "text": "Ensure ground slope directs water away from the building"}, {"section": "Drainage & Surface Run-Off", "subheader": "East Side-Receiption side", "text": "Check trench covers, façade drain gates, and main entry drainage for blockages/damage"}, {"section": "Drainage & Surface Run-Off", "subheader": "East Side-Receiption side", "text": "Boundary wall need to be checked for any seepage/leekage or damage"}, {"section": "Drainage & Surface Run-Off", "subheader": "West Side-Security cabin side", "text": "Confirm all roof downpipes are connected to stormwater drains"}, {"section": "Drainage & Surface Run-Off", "subheader": "West Side-Security cabin side", "text": "Ensure ground slope directs water away from the building"}, {"section": "Drainage & Surface Run-Off", "subheader": "West Side-Security cabin side", "text": "Check trench covers, façade drain gates, and main entry drainage for blockages/damage"}, {"section": "Drainage & Surface Run-Off", "subheader": "West Side-Security cabin side", "text": "Boundary wall need to be checked for any seepage/leekage or damage"}, {"section": "Drainage & Surface Run-Off", "subheader": "South Side-Warehouse side", "text": "Confirm all roof downpipes are connected to stormwater drains"}, {"section": "Drainage & Surface Run-Off", "subheader": "South Side-Warehouse side", "text": "Ensure ground slope directs water away from the building"}, {"section": "Drainage & Surface Run-Off", "subheader": "South Side-Warehouse side", "text": "Check trench covers, façade drain grates, and main entry drainage for blockages"}, {"section": "Drainage & Surface Run-Off", "subheader": "South Side-Warehouse side", "text": "Boundary wall need to be checked for any seepage/leekage or damage"}, {"section": "All side of Block", "subheader": "Rolling Shutters", "text": "Check the bottom seal"}, {"section": "All side of Block", "subheader": "Rolling Shutters", "text": "Check the side junctions"}, {"section": "All side of Block", "subheader": "Rolling Shutters", "text": "Both side rail sealant needs to be check"}, {"section": "All side of Block", "subheader": "Fire Doors", "text": "Check all door thresholds for proper sloping or sealing"}, {"section": "All side of Block", "subheader": "Fire Doors", "text": "Apply silicone/weatherstrips where metal frames meet doors"}, {"section": "All side of Block", "subheader": "Fire Doors", "text": "Verify sill drainage and sealant continuity for glass entrances"}, {"section": "Electrical", "subheader": "Electrical /MEP Entry Points", "text": "Inspect all MEP/cable entries (AC ducts, trays, conduits) for waterproof sealing"}, {"section": "Electrical", "subheader": "Electrical /MEP Entry Points", "text": "Seal any gaps with bitumen-based or fire-retardant sealant"}, {"section": "Electrical", "subheader": "Electrical /MEP Entry Points", "text": "Check the Pull pit chambers and seal the cables /wall joints"}, {"section": "Electrical", "subheader": "Electrical /MEP Entry Points", "text": "Visual inspection LT room roof top shad for waterproofing"}, {"section": "Electrical", "subheader": "Electrical /MEP Entry Points", "text": "Drainage should be free from any blockage"}, {"section": "LANDSCAPE & QUICK RESPONSE", "subheader": "Plumbing & Drainage Readiness", "text": "All plumbing pipe shafts across F block to be inspected for leakage or exposure."}, {"section": "LANDSCAPE & QUICK RESPONSE", "subheader": "Plumbing & Drainage Readiness", "text": "F block landscape drainage lines to be cleaned and cleared of debris."}, {"section": "LANDSCAPE & QUICK RESPONSE", "subheader": "Plumbing & Drainage Readiness", "text": "Strom water line need to checked and clean"}, {"section": "LANDSCAPE & QUICK RESPONSE", "subheader": "Plumbing & Drainage Readiness", "text": "All strom water chamber need to be check for any kind of masonary work"}, {"section": "LANDSCAPE & QUICK RESPONSE", "subheader": "Emergency Measures & Quick Response", "text": "Sandbags to be positioned near south side boundary wall outside."}, {"section": "LANDSCAPE & QUICK RESPONSE", "subheader": "Emergency Measures & Quick Response", "text": "Quick-response waterproofing kits to be made available with the site team for immediate patchwork in case of water seepage or leakage."}, {"section": "LANDSCAPE & QUICK RESPONSE", "subheader": "Emergency Measures & Quick Response", "text": "All Team briefed for monsoon support to facility team."}]}]
+;
+
+(function(){
+  "use strict";
+
+  // ---------- ICONS ----------
+  var ICON_CHECK = '<svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  var ICON_CAM_BEFORE = '<svg viewBox="0 0 24 24" fill="none"><path d="M4 8h3l1.5-2h7L17 8h3v11H4V8z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="13" r="3.2" stroke="currentColor" stroke-width="1.6"/></svg>';
+  var ICON_CAM_AFTER = ICON_CAM_BEFORE;
+  var ICON_CHEV = '<svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  var ICON_TOAST_OK = '<svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+  // ---------- DATA ----------
+  var RAW = window.__CHECKLIST_DATA__ || [];
+  var BLOCKS = RAW.map(function(b, bi){
+    var items = b.items.map(function(it, ii){
+      return {
+        id: bi + "-" + ii,
+        sno: ii + 1,
+        section: it.section || "General",
+        subheader: it.subheader || "",
+        text: it.text
+      };
+    });
+    // group into sections preserving order
+    var sections = [];
+    var byName = {};
+    items.forEach(function(it){
+      if(!byName[it.section]){
+        byName[it.section] = { name: it.section, items: [] };
+        sections.push(byName[it.section]);
+      }
+      byName[it.section].items.push(it);
+    });
+    return { name: b.block, key: b.block.replace(/\s+/g,'_'), items: items, sections: sections };
+  });
+
+  // ---------- STATE ----------
+  // state[blockKey] = { [itemId]: {done, remarks, before, after} }
+  var state = {};
+  var collapsed = {}; // sectionKey -> bool
+  var activeBlock = BLOCKS.length ? BLOCKS[0].key : null;
+  var storageOK = true;
+  var saveTimers = {};
+
+  function itemState(blockKey, id){
+    var b = state[blockKey] || {};
+    return b[id] || { done:false, remarks:"", before:null, after:null };
+  }
+
+  function setItemState(blockKey, id, patch){
+    if(!state[blockKey]) state[blockKey] = {};
+    var cur = state[blockKey][id] || { done:false, remarks:"", before:null, after:null };
+    state[blockKey][id] = Object.assign({}, cur, patch);
+    scheduleSave(blockKey);
+  }
+
+  function getInspector(blockKey){
+    var b = state[blockKey] || {};
+    return (b.__meta && b.__meta.inspector) || "";
+  }
+
+  function setInspector(blockKey, name){
+    if(!state[blockKey]) state[blockKey] = {};
+    if(!state[blockKey].__meta) state[blockKey].__meta = {};
+    state[blockKey].__meta.inspector = name;
+    scheduleSave(blockKey);
+  }
+
+  function scheduleSave(blockKey){
+    clearTimeout(saveTimers[blockKey]);
+    saveTimers[blockKey] = setTimeout(function(){ saveBlock(blockKey); }, 350);
+  }
+
+  async function saveBlock(blockKey){
+    if(!storageOK) return;
+    try{
+      await window.storage.set('block-state:' + blockKey, JSON.stringify(state[blockKey] || {}), true);
+    }catch(e){
+      console.error('save failed', e);
+      showToast('Could not save — check connection', true);
+    }
+  }
+
+  async function loadAll(){
+    if(!window.storage){ storageOK = false; return; }
+    var results = await Promise.all(BLOCKS.map(async function(b){
+      try{
+        var r = await window.storage.get('block-state:' + b.key, true);
+        return [b.key, r && r.value ? JSON.parse(r.value) : {}];
+      }catch(e){
+        return [b.key, {}];
+      }
+    }));
+    results.forEach(function(pair){ state[pair[0]] = pair[1]; });
+  }
+
+  // ---------- DRIVE SYNC ----------
+  // Permanently configured Drive-sync endpoint for this deployment.
+  // Change this if you ever redeploy the Apps Script and get a new URL.
+  var DEFAULT_DRIVE_URL = "https://script.google.com/macros/s/AKfycbxFLPz_oQkMZdc2PSwTkFE7zsog2sUlGxdky8SzLxh3Tbi80dXe2P_GAQ91Mwg6NScC/exec";
+  var driveUrl = DEFAULT_DRIVE_URL;
+  var driveWarnedOnce = false;
+
+  async function loadDriveConfig(){
+    if(!window.storage) return;
+    try{
+      var r = await window.storage.get('drive-webapp-url', true);
+      driveUrl = (r && r.value) ? r.value : DEFAULT_DRIVE_URL;
+    }catch(e){ driveUrl = DEFAULT_DRIVE_URL; }
+  }
+
+  async function saveDriveConfig(url){
+    driveUrl = url;
+    if(!window.storage) return;
+    try{
+      await window.storage.set('drive-webapp-url', url, true);
+    }catch(e){
+      showToast('Could not save Drive settings', true);
+    }
+  }
+
+  function updateDriveStatusBadge(){
+    var el = document.getElementById('driveStatus');
+    if(!el) return;
+    if(driveUrl){
+      el.innerHTML = '<svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Drive sync on';
+      el.style.color = 'var(--green-600)';
+    } else {
+      el.innerHTML = 'Drive sync off — tap ⚙';
+      el.style.color = 'var(--storm-500)';
+    }
+  }
+
+  function todayStamp(){
+    var d = new Date();
+    var pad = function(n){ return n < 10 ? '0'+n : ''+n; };
+    return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate());
+  }
+
+  async function uploadToDrive(blockName, blockKey, item, slot, dataUrl){
+    if(!driveUrl){
+      if(!driveWarnedOnce){
+        driveWarnedOnce = true;
+        showToast('Photo saved in app. Set up Drive sync (⚙) to also back it up.');
+      }
+      return;
+    }
+    var inspector = getInspector(blockKey) || 'Unspecified';
+    var stamp = new Date().toISOString().replace(/[:.]/g,'-');
+    var filename = 'item' + item.sno + '_' + slot + '_' + stamp + '.jpg';
+    var payload = {
+      date: todayStamp(),
+      block: blockName,
+      user: inspector,
+      slot: slot,
+      itemText: item.text,
+      filename: filename,
+      image: dataUrl
+    };
+    try{
+      await fetch(driveUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+      });
+      showToast('Photo synced to Drive');
+    }catch(e){
+      console.error('drive upload failed', e);
+      showToast('Drive sync failed — photo still saved in app', true);
+    }
+  }
+
+  // ---------- IMAGE COMPRESSION ----------
+  function compressImage(file){
+    return new Promise(function(resolve, reject){
+      var reader = new FileReader();
+      reader.onerror = reject;
+      reader.onload = function(){
+        var img = new Image();
+        img.onerror = reject;
+        img.onload = function(){
+          var maxDim = 720;
+          var w = img.width, h = img.height;
+          if(w > h && w > maxDim){ h = Math.round(h * maxDim / w); w = maxDim; }
+          else if(h >= w && h > maxDim){ w = Math.round(w * maxDim / h); h = maxDim; }
+          var canvas = document.createElement('canvas');
+          canvas.width = w; canvas.height = h;
+          var ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          var quality = 0.6;
+          var dataUrl = canvas.toDataURL('image/jpeg', quality);
+          // iteratively reduce if too big
+          var tries = 0;
+          while(dataUrl.length > 220000 && quality > 0.25 && tries < 6){
+            quality -= 0.1;
+            dataUrl = canvas.toDataURL('image/jpeg', quality);
+            tries++;
+          }
+          resolve(dataUrl);
+        };
+        img.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // ---------- RENDER ----------
+  var $tabs = document.getElementById('tabs');
+  var $content = document.getElementById('content');
+  var $ringVal = document.getElementById('ringVal');
+  var $ringPct = document.getElementById('ringPct');
+  var $progressText = document.getElementById('progressText');
+
+  var RING_CIRC = 138.2;
+
+  function blockStats(b){
+    var items = b.items;
+    var done = items.filter(function(it){ return itemState(b.key, it.id).done; }).length;
+    return { done: done, total: items.length };
+  }
+
+  function overallStats(){
+    var done = 0, total = 0;
+    BLOCKS.forEach(function(b){ var s = blockStats(b); done += s.done; total += s.total; });
+    return { done: done, total: total };
+  }
+
+  function renderTabs(){
+    $tabs.innerHTML = BLOCKS.map(function(b){
+      var s = blockStats(b);
+      var complete = s.total > 0 && s.done === s.total;
+      var active = b.key === activeBlock;
+      return '<div class="tab' + (active ? ' active' : '') + '" data-block="' + b.key + '">' +
+        esc(b.name.replace(/^Block\s*/,'')) +
+        '<span class="tab-badge' + (complete ? ' complete' : '') + '">' + s.done + '/' + s.total + '</span>' +
+      '</div>';
+    }).join('');
+    Array.prototype.forEach.call($tabs.querySelectorAll('.tab'), function(el){
+      el.addEventListener('click', function(){
+        activeBlock = el.getAttribute('data-block');
+        renderAll();
+        window.scrollTo({top:0, behavior:'smooth'});
+      });
+    });
+  }
+
+  function renderProgress(){
+    var o = overallStats();
+    var pct = o.total ? Math.round(o.done / o.total * 100) : 0;
+    var offset = RING_CIRC - (RING_CIRC * pct / 100);
+    $ringVal.style.strokeDashoffset = offset;
+    $ringPct.textContent = pct + '%';
+    $progressText.innerHTML = '<strong>' + o.done + ' of ' + o.total + '</strong> checks complete across 7 blocks';
+  }
+
+  function renderContent(){
+    var b = BLOCKS.filter(function(x){ return x.key === activeBlock; })[0];
+    if(!b){ $content.innerHTML = ''; return; }
+    var html = '<div class="block-card">';
+    b.sections.forEach(function(sec, si){
+      var secKey = b.key + '::' + si;
+      var isCollapsed = !!collapsed[secKey];
+      var doneCount = sec.items.filter(function(it){ return itemState(b.key, it.id).done; }).length;
+      html += '<div class="section-group' + (isCollapsed ? ' collapsed' : '') + '" data-sec="' + secKey + '">';
+      html += '<div class="section-head">' +
+                '<div class="section-title">' + esc(sec.name) + '</div>' +
+                '<div class="section-meta">' + doneCount + '/' + sec.items.length + ' <svg class="chev">' + ICON_CHEV + '</svg></div>' +
+              '</div>';
+      html += '<div class="items">';
+      sec.items.forEach(function(it){
+        var st = itemState(b.key, it.id);
+        var showTag = it.subheader && it.subheader !== it.section;
+        html += '<div class="item-row' + (st.done ? ' done' : '') + '" data-id="' + it.id + '">';
+        html += pinHtml(it.id, 'before', st.before);
+        html += '<div class="item-main">';
+        html += '<div class="item-toprow">';
+        html += '<div class="checkbox' + (st.done ? ' checked' : '') + '" data-action="toggle" data-id="' + it.id + '">' + ICON_CHECK + '</div>';
+        html += '<div>';
+        if(showTag) html += '<div class="subheader-tag">' + esc(it.subheader) + '</div><br>';
+        html += '<span class="item-sno">' + it.sno + '.</span><span class="item-text">' + esc(it.text) + '</span>';
+        if(st.remarks){
+          html += '<div class="remarks-preview" data-action="edit-remarks" data-id="' + it.id + '">✎ ' + esc(st.remarks) + '</div>';
+        } else {
+          html += '<div class="remarks-toggle" data-action="edit-remarks" data-id="' + it.id + '">+ Add note</div>';
+        }
+        html += '</div>';
+        html += '</div>';
+        html += '</div>';
+        html += pinHtml(it.id, 'after', st.after);
+        html += '</div>';
+      });
+      html += '</div></div>';
+    });
+    var inspector = getInspector(b.key);
+    html += '<div class="inspector-row">' +
+      '<label for="inspectorInput">Inspected by</label>' +
+      '<input id="inspectorInput" type="text" placeholder="Your name" value="' + esc(inspector) + '" data-block="' + b.key + '">' +
+      '<div class="drive-status" id="driveStatus"></div>' +
+    '</div>';
+    html += '</div>';
+    $content.innerHTML = html;
+    bindContentEvents(b);
+    updateDriveStatusBadge();
+    var inspInput = document.getElementById('inspectorInput');
+    inspInput.addEventListener('input', function(){
+      setInspector(b.key, inspInput.value);
+    });
+  }
+
+  function pinHtml(id, slot, dataUrl){
+    var filled = !!dataUrl;
+    var icon = slot === 'before' ? ICON_CAM_BEFORE : ICON_CAM_AFTER;
+    var label = slot === 'before' ? 'Before' : 'After';
+    return '<div class="pin-btn' + (filled ? ' filled' : '') + '" data-action="pin" data-slot="' + slot + '" data-id="' + id + '">' +
+      (filled ? '<img src="' + dataUrl + '">' : icon) +
+      (filled ? '<span class="pin-dot"></span>' : '') +
+      '<span class="pin-label">' + label + '</span>' +
+    '</div>';
+  }
+
+  function esc(s){
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+
+  function bindContentEvents(b){
+    // section collapse
+    Array.prototype.forEach.call($content.querySelectorAll('.section-head'), function(el){
+      el.addEventListener('click', function(){
+        var group = el.closest('.section-group');
+        var key = group.getAttribute('data-sec');
+        collapsed[key] = !collapsed[key];
+        group.classList.toggle('collapsed');
+      });
+    });
+    // checkbox toggle
+    Array.prototype.forEach.call($content.querySelectorAll('[data-action="toggle"]'), function(el){
+      el.addEventListener('click', function(e){
+        e.stopPropagation();
+        var id = el.getAttribute('data-id');
+        var cur = itemState(b.key, id);
+        setItemState(b.key, id, { done: !cur.done });
+        renderTabs();
+        renderProgress();
+        var row = el.closest('.item-row');
+        row.classList.toggle('done');
+        el.classList.toggle('checked');
+      });
+    });
+    // remarks
+    Array.prototype.forEach.call($content.querySelectorAll('[data-action="edit-remarks"]'), function(el){
+      el.addEventListener('click', function(e){
+        e.stopPropagation();
+        if(el.tagName === 'TEXTAREA') return;
+        var id = el.getAttribute('data-id');
+        var cur = itemState(b.key, id);
+        var ta = document.createElement('textarea');
+        ta.className = 'remarks-box';
+        ta.value = cur.remarks || '';
+        ta.placeholder = 'Add a note (material used, issue found, follow-up needed…)';
+        el.replaceWith(ta);
+        ta.focus();
+        var len = ta.value.length; ta.setSelectionRange(len, len);
+        function commit(){
+          setItemState(b.key, id, { remarks: ta.value.trim() });
+        }
+        ta.addEventListener('blur', function(){ commit(); renderContent(); });
+        ta.addEventListener('keydown', function(ev){
+          if(ev.key === 'Escape'){ ta.blur(); }
+        });
+      });
+    });
+    // pins
+    Array.prototype.forEach.call($content.querySelectorAll('[data-action="pin"]'), function(el){
+      el.addEventListener('click', function(e){
+        e.stopPropagation();
+        var id = el.getAttribute('data-id');
+        var slot = el.getAttribute('data-slot');
+        var st = itemState(b.key, id);
+        var existing = slot === 'before' ? st.before : st.after;
+        if(existing){
+          openLightbox(existing, b.key, id, slot);
+        } else {
+          triggerFilePick(b.key, id, slot, el);
+        }
+      });
+    });
+  }
+
+  function triggerFilePick(blockKey, id, slot, anchorEl){
+    var input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.capture = 'environment';
+    input.style.display = 'none';
+    document.body.appendChild(input);
+    input.addEventListener('change', async function(){
+      if(!input.files || !input.files[0]) { document.body.removeChild(input); return; }
+      anchorEl.style.opacity = '0.4';
+      try{
+        var dataUrl = await compressImage(input.files[0]);
+        var patch = {};
+        patch[slot] = dataUrl;
+        setItemState(blockKey, id, patch);
+        renderContent();
+        showToast('Photo attached');
+        var blk = BLOCKS.filter(function(x){ return x.key === blockKey; })[0];
+        var itm = blk ? blk.items.filter(function(x){ return x.id === id; })[0] : null;
+        if(blk && itm) uploadToDrive(blk.name, blockKey, itm, slot, dataUrl);
+      }catch(err){
+        console.error(err);
+        showToast('Could not read photo', true);
+      }
+      document.body.removeChild(input);
+    });
+    input.click();
+  }
+
+  // ---------- LIGHTBOX ----------
+  function openLightbox(dataUrl, blockKey, id, slot){
+    var wrap = document.createElement('div');
+    wrap.className = 'lightbox';
+    wrap.innerHTML =
+      '<button class="lightbox-close" aria-label="Close">&times;</button>' +
+      '<div class="lightbox-inner">' +
+        '<img src="' + dataUrl + '">' +
+        '<div class="lightbox-caption">' + (slot === 'before' ? 'Before' : 'After') + ' photo</div>' +
+        '<div class="lightbox-actions">' +
+          '<button class="lightbox-btn" data-act="replace">Replace</button>' +
+          '<button class="lightbox-btn danger" data-act="remove">Remove</button>' +
+        '</div>' +
+      '</div>';
+    document.body.appendChild(wrap);
+    function close(){ document.body.removeChild(wrap); }
+    wrap.querySelector('.lightbox-close').addEventListener('click', close);
+    wrap.addEventListener('click', function(e){ if(e.target === wrap) close(); });
+    wrap.querySelector('[data-act="remove"]').addEventListener('click', function(){
+      var patch = {}; patch[slot] = null;
+      setItemState(blockKey, id, patch);
+      renderContent();
+      close();
+      showToast('Photo removed');
+    });
+    wrap.querySelector('[data-act="replace"]').addEventListener('click', function(){
+      close();
+      var fakeAnchor = document.createElement('div');
+      triggerFilePick(blockKey, id, slot, fakeAnchor);
+    });
+  }
+
+  // ---------- TOAST ----------
+  var toastTimer;
+  function showToast(msg, isError){
+    var el = document.getElementById('toast');
+    el.innerHTML = (isError ? '' : '<svg viewBox="0 0 24 24" fill="none">' + ICON_TOAST_OK.replace('<svg viewBox="0 0 24 24" fill="none">','').replace('</svg>','') + '</svg>') + '<span>' + esc(msg) + '</span>';
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ el.classList.remove('show'); }, 2400);
+  }
+
+  function renderAll(){
+    renderTabs();
+    renderProgress();
+    renderContent();
+  }
+
+  // ---------- REPORT: PDF ----------
+  async function generatePdf(){
+    showToast('Building PDF report…');
+    var jsPDF = window.jspdf.jsPDF;
+    var doc = new jsPDF({ unit: 'mm', format: 'a4' });
+    var pageW = 210, pageH = 297, margin = 16;
+    var y = margin;
+
+    function newPageIfNeeded(need){
+      if(y + need > pageH - margin){
+        doc.addPage();
+        y = margin;
+        return true;
+      }
+      return false;
+    }
+
+    // Cover
+    doc.setFillColor(18,32,43);
+    doc.rect(0,0,pageW,70,'F');
+    doc.setTextColor(255,255,255);
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(22);
+    doc.text('Pre-Monsoon Readiness Report', margin, 32);
+    doc.setFontSize(12);
+    doc.setFont('helvetica','normal');
+    doc.text('Sector 75', margin, 42);
+    var now = new Date();
+    doc.setFontSize(10);
+    doc.setTextColor(200,220,215);
+    doc.text('Generated ' + now.toLocaleDateString('en-IN', {day:'2-digit',month:'long',year:'numeric'}) + ' at ' + now.toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit'}), margin, 50);
+
+    var o = overallStats();
+    var pct = o.total ? Math.round(o.done / o.total * 100) : 0;
+    doc.setTextColor(18,32,43);
+    y = 84;
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(14);
+    doc.text('Overall completion: ' + pct + '%  (' + o.done + ' of ' + o.total + ' checks)', margin, y);
+    y += 10;
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(11);
+    BLOCKS.forEach(function(b){
+      var s = blockStats(b);
+      doc.text('• ' + b.name + ' — ' + s.done + '/' + s.total + ' complete', margin + 2, y);
+      y += 6.5;
+    });
+    y += 4;
+    doc.setDrawColor(220,225,224);
+    doc.line(margin, y, pageW - margin, y);
+
+    // per block detail
+    for(var bi=0; bi<BLOCKS.length; bi++){
+      var b = BLOCKS[bi];
+      doc.addPage();
+      y = margin;
+      doc.setFont('helvetica','bold');
+      doc.setFontSize(16);
+      doc.setTextColor(15,110,106);
+      doc.text(b.name, margin, y);
+      y += 9;
+
+      for(var si=0; si<b.sections.length; si++){
+        var sec = b.sections[si];
+        newPageIfNeeded(14);
+        doc.setFont('helvetica','bold');
+        doc.setFontSize(12);
+        doc.setTextColor(31,58,79);
+        doc.text(sec.name, margin, y);
+        y += 7;
+
+        for(var ii=0; ii<sec.items.length; ii++){
+          var it = sec.items[ii];
+          var st = itemState(b.key, it.id);
+          var hasPhoto = !!(st.before || st.after);
+          var lineText = it.sno + '. ' + it.text;
+          doc.setFont('helvetica','normal');
+          doc.setFontSize(9.5);
+          var wrapped = doc.splitTextToSize(lineText, pageW - margin*2 - 8);
+          var blockHeight = wrapped.length * 4.4 + (st.remarks ? 5 : 0) + (hasPhoto ? 26 : 4) + 3;
+          newPageIfNeeded(blockHeight);
+
+          // checkbox glyph
+          doc.setDrawColor(150,160,158);
+          if(st.done){
+            doc.setFillColor(63,125,88);
+            doc.roundedRect(margin, y-3.2, 3.6, 3.6, 0.6, 0.6, 'F');
+            doc.setDrawColor(255,255,255);
+            doc.setLineWidth(0.5);
+            doc.line(margin+0.7, y-1.4, margin+1.5, y-0.4);
+            doc.line(margin+1.5, y-0.4, margin+3.1, y-2.8);
+            doc.setLineWidth(0.2);
+          } else {
+            doc.roundedRect(margin, y-3.2, 3.6, 3.6, 0.6, 0.6, 'S');
+          }
+          doc.setTextColor(18,32,43);
+          doc.text(wrapped, margin + 6, y);
+          y += wrapped.length * 4.4;
+
+          if(st.remarks){
+            doc.setFont('helvetica','italic');
+            doc.setFontSize(8.5);
+            doc.setTextColor(100,110,108);
+            var remWrapped = doc.splitTextToSize('Note: ' + st.remarks, pageW - margin*2 - 8);
+            doc.text(remWrapped, margin + 6, y);
+            y += remWrapped.length * 4;
+          }
+
+          if(hasPhoto){
+            var imgY = y + 1;
+            var imgSize = 24;
+            var xCursor = margin + 6;
+            if(st.before){
+              try{
+                doc.addImage(st.before, 'JPEG', xCursor, imgY, imgSize, imgSize);
+                doc.setFontSize(7);
+                doc.setTextColor(120,130,128);
+                doc.text('Before', xCursor, imgY + imgSize + 3.5);
+                xCursor += imgSize + 6;
+              }catch(e){}
+            }
+            if(st.after){
+              try{
+                doc.addImage(st.after, 'JPEG', xCursor, imgY, imgSize, imgSize);
+                doc.setFontSize(7);
+                doc.setTextColor(120,130,128);
+                doc.text('After', xCursor, imgY + imgSize + 3.5);
+              }catch(e){}
+            }
+            y += imgSize + 7;
+          } else {
+            y += 3;
+          }
+        }
+        y += 3;
+      }
+    }
+
+    var fname = 'Pre-Monsoon-Checklist-Sector75-' + now.toISOString().slice(0,10) + '.pdf';
+    doc.save(fname);
+    showToast('PDF report downloaded');
+  }
+
+  // ---------- REPORT: EXCEL ----------
+  function generateExcel(){
+    showToast('Building Excel report…');
+    var wb = XLSX.utils.book_new();
+
+    // summary sheet
+    var summaryRows = [['Pre-Monsoon Checklist — Sector 75'], ['Generated', new Date().toLocaleString('en-IN')], [], ['Block','Done','Total','% Complete']];
+    BLOCKS.forEach(function(b){
+      var s = blockStats(b);
+      var pct = s.total ? Math.round(s.done/s.total*100) : 0;
+      summaryRows.push([b.name, s.done, s.total, pct + '%']);
+    });
+    var wsSummary = XLSX.utils.aoa_to_sheet(summaryRows);
+    wsSummary['!cols'] = [{wch:14},{wch:10},{wch:10},{wch:12}];
+    XLSX.utils.book_append_sheet(wb, wsSummary, 'Summary');
+
+    BLOCKS.forEach(function(b){
+      var rows = [['S.No','Header','Sub Header','Checklist Item','Done','Remarks','Photo Before','Photo After']];
+      b.items.forEach(function(it){
+        var st = itemState(b.key, it.id);
+        rows.push([
+          it.sno, it.section, it.subheader, it.text,
+          st.done ? 'Yes' : 'No',
+          st.remarks || '',
+          st.before ? 'Attached' : '',
+          st.after ? 'Attached' : ''
+        ]);
+      });
+      var ws = XLSX.utils.aoa_to_sheet(rows);
+      ws['!cols'] = [{wch:5},{wch:24},{wch:20},{wch:55},{wch:7},{wch:30},{wch:12},{wch:12}];
+      var sheetName = b.name.replace(/[\\/?*\[\]:]/g,'').slice(0,31);
+      XLSX.utils.book_append_sheet(wb, ws, sheetName);
+    });
+
+    var fname = 'Pre-Monsoon-Checklist-Sector75-' + new Date().toISOString().slice(0,10) + '.xlsx';
+    XLSX.writeFile(wb, fname);
+    showToast('Excel report downloaded');
+  }
+
+  // ---------- SETTINGS MODAL ----------
+  var HOWTO_HTML =
+    '<strong>One-time setup (takes ~2 minutes):</strong>' +
+    '<ol>' +
+      '<li>Go to <code>script.google.com</code> → <strong>New project</strong>.</li>' +
+      '<li>Delete the placeholder code and paste the Apps Script code I gave you in chat.</li>' +
+      '<li>Click <strong>Deploy → New deployment</strong>. Choose type <strong>Web app</strong>.</li>' +
+      '<li>Set "Execute as" to <strong>Me</strong>, and "Who has access" to <strong>Anyone</strong>.</li>' +
+      '<li>Click <strong>Deploy</strong> and authorize the permissions Google asks for.</li>' +
+      '<li>Copy the Web app URL (ends in <code>/exec</code>) and paste it above.</li>' +
+    '</ol>' +
+    'Photos will then appear in your Drive under <strong>Monsoon Checklist Sec 75 → date → block → inspector name</strong>.';
+
+  function openSettings(){
+    document.getElementById('driveUrlInput').value = driveUrl;
+    document.getElementById('howToBox').style.display = 'none';
+    document.getElementById('settingsModal').style.display = 'flex';
+  }
+  function closeSettings(){
+    document.getElementById('settingsModal').style.display = 'none';
+  }
+  document.getElementById('btnSettings').addEventListener('click', openSettings);
+  document.getElementById('btnSettingsCancel').addEventListener('click', closeSettings);
+  document.getElementById('settingsModal').addEventListener('click', function(e){
+    if(e.target.id === 'settingsModal') closeSettings();
+  });
+  document.getElementById('btnHowTo').addEventListener('click', function(){
+    var box = document.getElementById('howToBox');
+    box.innerHTML = HOWTO_HTML;
+    box.style.display = box.style.display === 'none' ? 'block' : 'none';
+  });
+  document.getElementById('btnSettingsSave').addEventListener('click', async function(){
+    var url = document.getElementById('driveUrlInput').value.trim();
+    await saveDriveConfig(url);
+    driveWarnedOnce = true;
+    updateDriveStatusBadge();
+    closeSettings();
+    showToast(url ? 'Drive sync enabled' : 'Drive sync turned off');
+  });
+
+  // ---------- INIT ----------
+  document.getElementById('btnPdf').addEventListener('click', function(){ generatePdf().catch(function(e){ console.error(e); showToast('PDF generation failed', true); }); });
+  document.getElementById('btnExcel').addEventListener('click', function(){ try{ generateExcel(); }catch(e){ console.error(e); showToast('Excel generation failed', true); } });
+
+  (async function init(){
+    try{
+      await loadAll();
+    }catch(e){
+      console.error(e);
+      storageOK = false;
+      showToast('Shared storage unavailable — changes won\'t be saved', true);
+    }
+    try{ await loadDriveConfig(); }catch(e){}
+    renderAll();
+  })();
+
+})();
+</script>
+</body>
+</html>
